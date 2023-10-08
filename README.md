@@ -28,13 +28,11 @@ Input your own openai api key in `llm_utils.py`.
 ### Mixed Data Preprocessing
 
 ```
-# Make sure the file paths exist
 mkdir -p data
 mkdir -p data_exp
 mkdir -p demos
 mkdir -p mixed
 
-# Run preprocessing
 python mixed_preprocessing.py \
 --input_style que \
 --output_style cat-form
@@ -44,10 +42,8 @@ python mixed_preprocessing.py \
 ### Demos Construction
 
 ```
-# Make sure the file paths exist
 mkdir -p demos_inference/diversity-based
 
-# Construct demos for inference
 python demos_inference.py \
 --demo_sampling_method diversity \
 --output_style cat-form
