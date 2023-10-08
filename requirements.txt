@@ -1,0 +1,6 @@
+openai==0.27.4
+torch==2.0.0
+numpy==1.23.3
+scikit-learn==1.2.1
+sentence-transformers==2.2.2
+matplotlib==3.7.1
