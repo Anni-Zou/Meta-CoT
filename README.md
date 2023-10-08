@@ -23,6 +23,7 @@ https://github.com/kojima-takeshi188/zero_shot_cot/tree/main/log
 ```
 
 ## Implementations
+Input your own openai api key in `llm_utils.py`.
 
 ### Mixed Data Preprocessing
 
