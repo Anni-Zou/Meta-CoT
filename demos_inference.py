@@ -264,8 +264,6 @@ def create_demos_inference(args, mixed_data):
     return 
 
 
-
-
 def main():
     args = parse_arguments()
     fix_seed(args.random_seed)
