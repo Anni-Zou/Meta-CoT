@@ -28,11 +28,6 @@ Input your own openai api key in `llm_utils.py`.
 ### Mixed Data Preprocessing
 
 ```
-mkdir -p data
-mkdir -p data_exp
-mkdir -p demos
-mkdir -p mixed
-
 python mixed_preprocessing.py \
 --input_style que \
 --output_style cat-form
