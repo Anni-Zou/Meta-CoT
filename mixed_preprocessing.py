@@ -81,6 +81,12 @@ def parse_arguments():
         "--mixed_data_save_dir", type=str, default="./mixed", help="where to save the mixed data"
     )
     parser.add_argument(
+        "--data_exp_dir", type=str, default="./data_exp", help="where to save the preliminary experimental results"
+    )
+    parser.add_argument(
+        "--mixed_data_exp_dir", type=str, default="./experiment", help="where to save the preliminary experimental results"
+    )
+    parser.add_argument(
         "--demo_sampling_method", type=str, default="random", choices=["random", "random-manual", "manual"], help="method to sample demos"
     )
     parser.add_argument("--num_experiment_data", type=int, default=1500, help="total experimental data size")
@@ -104,9 +110,14 @@ def load_data_wcot(args, dataset_name):
     pred_file = DATA_INFO[dataset_name]["pred_file"]
     category = DATA_INFO[dataset_name]["category"]
     form = DATA_INFO[dataset_name]["form"]
-    dataset_path = f'./data/{dataset_name}_{category}_{form}'
+    dataset_path = f'./{args.load_dir}/{dataset_name}_{category}_{form}'
+
+    if not os.path.exists(args.load_dir):
+        os.mkdir(args.load_dir)
+
 
     assert not os.path.exists(dataset_path)
+
     
     corpus, question, rationale, pred_ans, gold_ans = [], [], [], [], []
 
@@ -238,10 +249,12 @@ def split_and_merge_data(args):
 
     mixed_data_dir = f'{mixed_data_save_dir}/{output_style}'
 
+    if not os.path.exists(mixed_data_save_dir):
+        os.mkdir(mixed_data_save_dir)
+
     if os.path.exists(mixed_data_dir):
         cached_f = open(mixed_data_dir, 'r')
         mixed_data = json.load(cached_f)
-
         return mixed_data
 
     if output_style == "task":
@@ -388,6 +401,8 @@ def get_demo(args, split_data):
     num_sample = num_sampling(args)
 
     demo_save_file = f'{demo_save_dir}/{input_style}_{split_style}_{demo_sampling_method}'
+    if not os.path.exists(demo_save_dir):
+        os.mkdir(demo_save_dir)
 
     demos = []
     if os.path.exists(demo_save_file):
@@ -417,7 +432,9 @@ def get_experiment_data(args, demos, split_data):
     num_sample_exp = args.num_experiment_data / len(split_data.keys())
     
     demos_comb = [data[-1] for data in demos]
-    mixed_data_save_file = f'./data_exp/{input_style}_{split_style}'
+    mixed_data_save_file = f'./{args.data_exp_dir}/{input_style}_{split_style}'
+    if not os.path.exists(args.data_exp_dir):
+        os.mkdir(args.data_exp_dir)
 
     mixed_data = []
     
@@ -495,15 +512,18 @@ def type_identification(args, demo, input):
     return response
 
 
+
+
 def main(resume_id=0):
     args = parse_arguments()
     fix_seed(args.random_seed)
+
     
     # load and store dataset info
     for dataset_name in DATA_INFO.keys():
         category = DATA_INFO[dataset_name]["category"]
         form = DATA_INFO[dataset_name]["form"]
-        dataset_path = f'./data/{dataset_name}_{category}_{form}'
+        dataset_path = f'./{args.load_dir}/{dataset_name}_{category}_{form}'
         if os.path.exists(dataset_path):
             pass
         else:
@@ -525,7 +545,8 @@ def main(resume_id=0):
     
     # experiment
     if args.run_test:
-        output_path = f"./experiment/{args.input_style}_{args.output_style}_{args.engine}_{args.demo_sampling_method}"
+
+        output_path = f"./{args.mixed_data_exp_dir}/{args.input_style}_{args.output_style}_{args.engine}_{args.demo_sampling_method}"
         with open(output_path, 'a') as f:
             for i, data in enumerate(mixed_exp_data):
                 if i < resume_id -1:
@@ -553,6 +574,8 @@ def main(resume_id=0):
     
 
     return
+
+
 
 
 if __name__ == "__main__":
