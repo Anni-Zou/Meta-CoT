@@ -68,6 +68,7 @@ def read_mixed_data(args):
     print("Successfully loading mixed data!")
     return mixed_data
 
+
 def randomly_based(args, mixed_data):
     for type, type_data in mixed_data.items():
         print(f"Begin demo construction for {type}")
@@ -117,6 +118,7 @@ def randomly_based(args, mixed_data):
                 write_f.write(demo_json + "\n")
   
     return
+
 
 def similarity_based(args, mixed_data):
     for type, type_data in mixed_data.items():
@@ -178,6 +180,7 @@ def diversity_based(args, mixed_data):
     for type, type_data in mixed_data.items():
         diversity_demo_type(args, type, type_data)
     return
+
 
 def diversity_demo_type(args, type, type_data):
     encoder = SentenceTransformer(args.encoder)
@@ -269,12 +272,9 @@ def create_demos_inference(args, mixed_data):
     return 
 
 
-
-
 def main():
     args = parse_arguments()
     fix_seed(args.random_seed)
-    
     mixed_data = read_mixed_data(args)
     create_demos_inference(args, mixed_data)
 
