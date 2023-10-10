@@ -37,8 +37,6 @@ python mixed_preprocessing.py \
 ### Demos Construction
 
 ```
-mkdir -p demos_inference/diversity-based
-
 python demos_inference.py \
 --demo_sampling_method diversity \
 --output_style cat-form
