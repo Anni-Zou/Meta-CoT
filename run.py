@@ -50,7 +50,6 @@ def parse_arguments():
     return args
 
 
-
 def scenario_identification(args, input):
     # get demos for identification
     demo_for_identification = f'./{args.demo_save_dir}/{args.input_style}_{args.output_style}_random'
@@ -84,15 +83,12 @@ def scenario_identification(args, input):
                         ('symbolic','yes-no'), ('symbolic','short-answer')]
             pred_type = random.sample(choices, 1)[0]
             log_dict["3rd"] = pred_type
-    
     #print(pred_type)
-
     return pred_type, log_dict
 
 
 def prompt_constructor(args, pred_type):
     # only for [cat-form] output style, to be updated for other output styles
-
     cat, form = pred_type
     demo_for_inference = f"{args.demo_inference_save_dir}/{args.demo_selection_method}/{cat}_{form}"
     
@@ -115,10 +111,8 @@ def prompt_constructor(args, pred_type):
 
 
 def prompt_constructor_rand_sim(args, pred_type):
-
     cat, form = pred_type
     demo_for_inference = f"{args.demo_inference_save_dir}/{args.demo_selection_method}/{cat}_{form}"
-
     all_demos = []
 
     with open(demo_for_inference) as f:
@@ -130,7 +124,6 @@ def prompt_constructor_rand_sim(args, pred_type):
                 z.append(dem['rationale'])
                 y.append(dem['pred_ans'])
             index_list = list(range(len(x)))
-
             demo_text = ""
             for i in index_list:
                 demo_text += x[i] + " " + z[i] + " " + \
@@ -140,14 +133,12 @@ def prompt_constructor_rand_sim(args, pred_type):
     return all_demos
 
 
-
 def run_inference(args, resume_id=0, current_type=""):
     # create mixed data for inference
     mixed_file = f"{args.mixed_data_save_dir}/{args.output_style}"
     assert os.path.exists(mixed_file)    # ensure the mixed data preprocessing has been completed
     with open(mixed_file) as f:
         mixed_data = json.load(f)
-    
     # Inference...
     for type, type_data in mixed_data.items():
         if current_type != "" and type != current_type:
@@ -157,7 +148,6 @@ def run_inference(args, resume_id=0, current_type=""):
         questions = ["Q: "+ cor +"\nA: " for cor in corpus]
         print(f"*************************{type}*************************")
         print(f"Data size: {len(questions)}")
-
         total = 0
         correct_list = []
         with open(output_path, 'a') as f:
@@ -166,14 +156,13 @@ def run_inference(args, resume_id=0, current_type=""):
                     continue
                 print('*************************')
                 print("{}st data".format(i+1))
-
                 input_question = question
                 pure_question = corpus[i]
                 gold_ans = gold_answers[i]
                 ori_ds = ori_dataset[i]
                 zero_shot_rationale = rationales[i]
                 zero_shot_pred_ans = pred_answers[i]
-
+                
                 # get corresponding demos for inference
                 pred_type, log_type = scenario_identification(args, pure_question)
                 if args.demo_selection_method == "diversity-based":
@@ -189,7 +178,6 @@ def run_inference(args, resume_id=0, current_type=""):
                 # extract the answer
                 pred_ans = answer_cleansing(args, rationale, pred_type)
 
-
                 print("==============Input Question==============")
                 print(input_question)
                 print("==============Pred Answer==============")
@@ -200,7 +188,6 @@ def run_inference(args, resume_id=0, current_type=""):
                 print(f"<{pred_type[0]}, {pred_type[1]}>")
                 print("==============Gold Type==============")
                 print(gold_type)
-
 
                 # Checking answer ...
                 correct = (np.array([pred_ans]) == np.array([gold_ans])).sum().item()
@@ -233,17 +220,13 @@ def run_inference(args, resume_id=0, current_type=""):
     return
 
 
-
 def main():
     args = parse_arguments()
     fix_seed(args.random_seed)
     current_type = "commonsense_multiple-choice"
     resume_id = 0
-
     run_inference(args, resume_id=resume_id, current_type=current_type)
     
-    
-
 
 if __name__ == "__main__":
     main()
