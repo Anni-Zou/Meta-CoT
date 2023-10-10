@@ -8,7 +8,6 @@ from utils import fix_seed,data_reader
 from llm_utils import *
 
 
-
 # MCQ: Multiple-Choice Question
 # SAQ: Short-Answer Question
 # Y/N: Yes-No Question
@@ -54,7 +53,6 @@ DATA_INFO = {
                 "data_file": "./dataset/SVAMP/SVAMP.json",
                 "pred_file": "./log/svamp_zero_shot_cot.log"},
 }
-
 
 
 def parse_arguments():
@@ -114,11 +112,8 @@ def load_data_wcot(args, dataset_name):
 
     if not os.path.exists(args.load_dir):
         os.mkdir(args.load_dir)
-
-
     assert not os.path.exists(dataset_path)
 
-    
     corpus, question, rationale, pred_ans, gold_ans = [], [], [], [], []
 
     with open(pred_file, "r", encoding="utf-8") as fp:
@@ -131,7 +126,6 @@ def load_data_wcot(args, dataset_name):
                 answer_seg = line
             elif "Therefore" in line and "the answer" in line:
                 c_rationale = answer_seg
-
             elif answer_seg != "":
                 answer_seg += line
             if "pred_mode" in line:
@@ -140,7 +134,6 @@ def load_data_wcot(args, dataset_name):
                 c_gold_ans = line.split(":")[1].strip()
                 c_rationale = c_rationale.replace("A: Let's think step by step.", "Let's think step by step.")
                 c_question = c_question + "\nA: "
-
                 corpus.append(pure_question)
                 question.append(c_question)
                 rationale.append(c_rationale)
@@ -148,24 +141,19 @@ def load_data_wcot(args, dataset_name):
                 if args.debug:
                     gold_ans.append(c_gold_ans)
                 answer_seg = ""
-
         questions, _ = data_reader(dataset_name, data_file)
-
         for i, cor in enumerate(corpus):
             for que in questions:
                 if cor in que and cor != que:
                     corpus[i] = que
 
-
         dataset_info = {"dataset": dataset_name, "category": category, "form": form,
                 "corpus": corpus, "question": question, "rationale": rationale,
                 "pred_ans": pred_ans, "gold_ans": gold_ans}
 
-
         with open(dataset_path, 'w') as f:
             dataset_json = json.dumps(dataset_info)
             f.write(dataset_json)
-
     return
 
 
@@ -259,7 +247,6 @@ def split_and_merge_data(args):
 
     if output_style == "task":
         data_dirs = glob.glob(f'{load_dir}/*')
-
         tasks = {}
         for data_dir in data_dirs:
             task = data_dir.split('/')[-1].split('_')[0]
@@ -267,9 +254,7 @@ def split_and_merge_data(args):
                 tasks[task].append(data_dir)
             else:
                 tasks[task] = [data_dir]
-
         d_data = dict.fromkeys(tasks.keys(),[])
-
         for task, data_dirs_list in tasks.items():
             task_corpus, task_rationale, task_predans, task_goldans, task_oriname= [], [], [], [], []
             for dir in data_dirs_list:
@@ -285,10 +270,8 @@ def split_and_merge_data(args):
             random.shuffle(zipped_list)
             task_corpus, task_rationale, task_predans, task_goldans, task_oriname = zip(*zipped_list)
             d_data[task] = [task_corpus, task_rationale, task_predans, task_goldans, task_oriname, output_data]
-
     elif output_style == "category":
         data_dirs = glob.glob(f"{load_dir}/*")
-        
         category = {}
         for data_dir in data_dirs:
             cat = data_dir.split('/')[-1].split('_')[1]
@@ -296,9 +279,8 @@ def split_and_merge_data(args):
                 category[cat].append(data_dir)
             else:
                 category[cat] = [data_dir]
-
         d_data = dict.fromkeys(category.keys(), [])
-
+        
         for cat, data_dirs_list in category.items():
             cat_corpus, cat_rationale, cat_predans, cat_goldans, cat_oriname= [], [], [], [], []
             for dir in data_dirs_list:
@@ -317,7 +299,6 @@ def split_and_merge_data(args):
 
     elif output_style == "cat-form":
         data_dirs = glob.glob(f"{load_dir}/*")
-        
         cat_forms = {}
         for data_dir in data_dirs:
             cat = data_dir.split('/')[-1].split('_')[1]
@@ -327,9 +308,7 @@ def split_and_merge_data(args):
                 cat_forms[cat_form].append(data_dir)
             else:
                 cat_forms[cat_form] = [data_dir]
-
         d_data = dict.fromkeys(cat_forms.keys(), [])
-
         for cat_form, data_dirs_list in cat_forms.items():
             catform_corpus, catform_rationale, catform_predans, catform_goldans, catform_oriname= [], [], [], [], []
             for dir in data_dirs_list:
@@ -348,7 +327,6 @@ def split_and_merge_data(args):
 
     elif output_style == "form":
         data_dirs = glob.glob(f"{load_dir}/*")
-        
         forms = {}
         for data_dir in data_dirs:
             form = data_dir.split('/')[-1].split('_')[-1]
@@ -356,7 +334,6 @@ def split_and_merge_data(args):
                 forms[form].append(data_dir)
             else:
                 forms[form] = [data_dir]
-
         d_data = dict.fromkeys(forms.keys(), [])
 
         for form, data_dirs_list in forms.items():
@@ -426,6 +403,7 @@ def get_demo(args, split_data):
 
     return demos
 
+
 def get_experiment_data(args, demos, split_data):
     split_style = args.output_style
     input_style = args.input_style
@@ -468,7 +446,8 @@ def get_experiment_data(args, demos, split_data):
                 f.write(data_json + "\n")
 
     return mixed_data
-        
+
+
 def type_cleansing(args, type):
     if args.output_style == 'task':
         new_type = re.findall(r'addsub|aqua|gsm8k|multiarith|singleeq|svamp|commonsensqa|strategyqa|coin-flip|last-letters', type)
@@ -493,10 +472,8 @@ def type_cleansing(args, type):
     return type
         
 
-
 def type_identification(args, demo, input):
     demo += input + "\nScenario "
-
     #if args.output_style == 'task':
     #    demo += "(choosing from 'addsub', 'aqua', 'gsm8k', 'multiarith', 'singleeq', 'svamp', 'commonsensqa', 'strategyqa', 'coin-flip', 'last-letters')"
     #elif args.output_style == 'category':
@@ -505,19 +482,13 @@ def type_identification(args, demo, input):
     #    demo += "(choosing from 'multiple-choice', 'short-answer', 'yes-no')"
     #elif args.output_style == 'cat-form':
     #    demo += "(choosing from '<arithmetic, short-answer>', '<arithmetic, multiple-choice>', '<commonsense, multiple-choice>', '<commonsense, yes-no>', '<symbolic, short-answer>', '<symbolic, yes-no>')"
-
     demo += ": "
     response  = decoder_for_gpt(demo, engine=args.engine, max_length=32)
     response = response.strip().lower()
-    return response
-
-
-
-
+    return respons
 def main(resume_id=0):
     args = parse_arguments()
     fix_seed(args.random_seed)
-
     
     # load and store dataset info
     for dataset_name in DATA_INFO.keys():
@@ -545,7 +516,6 @@ def main(resume_id=0):
     
     # experiment
     if args.run_test:
-
         output_path = f"./{args.mixed_data_exp_dir}/{args.input_style}_{args.output_style}_{args.engine}_{args.demo_sampling_method}"
         with open(output_path, 'a') as f:
             for i, data in enumerate(mixed_exp_data):
@@ -559,23 +529,17 @@ def main(resume_id=0):
                 ori_dataset = data['ori_dataset']
                 pred_typestr = type_identification(args, demos_string, input_data)
                 pred_typestr = type_cleansing(args, pred_typestr)
-
                 new_data = {'input': input_data, 'gold_type': gold_typestr, 'pred_type': pred_typestr, 'ori_dataset': ori_dataset}
-
                 print("------Input------")
                 print(input_data)
                 print("------Gold_Ans------")
                 print(gold_typestr)
                 print("------Pred_Ans------")
                 print(pred_typestr)
-
                 record = json.dumps(new_data)
                 f.write(record + '\n')
     
-
     return
-
-
 
 
 if __name__ == "__main__":
