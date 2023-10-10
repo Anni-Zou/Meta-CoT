@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 ## Datasets
 
-Download the datasets from the following repository and put them under `dataset` and `log`:
+Download the datasets from the following repository and put them under `./dataset` and `./log`:
 
 ```
 https://github.com/kojima-takeshi188/zero_shot_cot/tree/main/dataset
