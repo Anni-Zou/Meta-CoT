@@ -9,6 +9,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 import argparse
+import os
 from utils import *
 
 
@@ -254,6 +255,10 @@ def diversity_demo_type(args, type, type_data):
 
 def create_demos_inference(args, mixed_data):
     demo_sampling_method = args.demo_sampling_method
+    demo_folder = f"{args.demo_inference_save_dir}/{args.demo_sampling_method}-based"
+    if not os.path.exists(demo_folder):
+        os.makedirs(demo_folder)
+
     if demo_sampling_method == "diversity":
         diversity_based(args, mixed_data)
     elif demo_sampling_method == "random":
@@ -262,6 +267,8 @@ def create_demos_inference(args, mixed_data):
         similarity_based(args, mixed_data)
 
     return 
+
+
 
 
 def main():
