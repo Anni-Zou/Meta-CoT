@@ -47,3 +47,14 @@ python demos_inference.py \
 ```
 python run.py
 ```
+
+## Citing Meta-CoT
+```
+@article{zou2023metacot,
+  title={Meta-CoT: Generalizable Chain-of-Thought Prompting in Mixed-task Scenarios with Large Language Models},
+  author={Anni Zou and Zhuosheng Zhang and Hai Zhao and Xiangru Tang},
+  journal={arXiv preprint arXiv:2310.06692},
+  year={2023}
+}
+```
+
